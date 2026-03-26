@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eatly | Guardián Alimentario Inteligente (Proyecto Académico v3.0)</title>
+    <meta name="description" content="Eatly es el resultado de una investigación universitaria dedicada a transformar la vida de personas con restricciones alimentarias mediante tecnología abierta y honesta.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981',
+                        secondary: '#059669',
+                        accent: '#34d399',
+                        dark: '#0f172a',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glow: {
+                            '0%, 100%': { opacity: 0.5, transform: 'scale(1)' },
+                            '50%': { opacity: 1, transform: 'scale(1.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Preloader Styles */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(16, 185, 129, 0.1);
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .header-floating {
+            max-width: fit-content;
+            margin: 0 auto;
+            border-radius: 9999px;
+            top: 2rem;
+            padding: 0.5rem 1.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        @media (max-width: 768px) {
+            .header-floating {
+                max-width: 90%;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-bg {
+            background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent),
+                        radial-gradient(circle at bottom left, rgba(52, 211, 153, 0.05), transparent);
+        }
+        .bento-card {
+            background: #ffffff;
+            border-radius: 2.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+            will-change: transform;
+        }
+        .bento-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 30px 60px -15px rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            background: #ffffff;
+        }
+        .btn-premium {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-premium:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+        }
+        /* Custom scroll indicator */
+        #nav-indicator {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            height: 2px;
+            width: 0;
+            background: #10b981;
+            transition: all 0.3s ease;
+            border-radius: 99px;
+        }
+        .nav-link:hover ~ #nav-indicator {
+            opacity: 1;
+        }
+        /* Fluid Animations */
+        .reveal-up {
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+        .reveal-up.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .feature-icon-float {
+            animation: float-small 4s ease-in-out infinite;
+        }
+        @keyframes float-small {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        /* 3D Premium Effects */
+        .perspective-lg { perspective: 2000px; }
+        .transform-3d { transform-style: preserve-3d; }
+        .rotate-y-\[-20deg\] { transform: rotateY(-20deg); }
+        .rotate-x-\[10deg\] { transform: rotateX(10deg); }
+        
+        /* Mobile Adaptation Fixes */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 4.5rem !important; line-height: 0.95 !important; }
+            .hero-subtitle { font-size: 1.25rem !important; padding: 0 1rem; }
+            .bento-card { padding: 1.5rem !important; border-radius: 2rem; }
+            .py-40, .py-52 { padding-top: 5rem !important; padding-bottom: 5rem !important; }
+            
+            /* Native app feel for mobile elements */
+            .mobile-w-full { width: 100% !important; justify-content: center; }
+            .mobile-text-center { text-align: center !important; }
+            
+            /* Disable hover effects on mobile to improve JS parsing */
+            .bento-card:hover { transform: none; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans hero-bg overflow-x-hidden">
+
+    <!-- Preloader -->
+    <div id="loader">
+        <div class="loader-ring"></div>
+        <div class="mt-6 flex items-center gap-2">
+            <div class="w-6 h-6 bg-primary rounded-lg flex items-center justify-center">
+                <i data-lucide="leaf" class="w-4 h-4 text-white"></i>
+            </div>
+            <span class="text-white font-black tracking-tighter text-xl">Eatly</span>
+        </div>
+        <p class="text-slate-500 text-xs mt-4 uppercase tracking-[0.3em] font-bold">Cargando Experiencia...</p>
+    </div>
+
+    <!-- Navbar Wrapper for centering -->
+    <div class="fixed top-0 left-0 w-full z-[100] px-6">
+        <header class="header-floating glass border border-slate-200/50 transition-all duration-500 overflow-hidden" id="main-header">
+            <div class="flex items-center gap-10">
+                <a href="#" class="flex items-center gap-2 group cursor-pointer pr-4 border-r border-slate-200/50">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-12 transition-all">
+                        <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-black tracking-tighter text-slate-900 group-hover:gradient-text transition-all navbar-logo-text">Eatly</span>
+                </a>
+                
+                <nav class="hidden md:flex items-center gap-8 text-[13px] font-bold text-slate-500 py-2">
+                    <a href="#features" class="nav-link hover:text-slate-900 transition-all">Funciones</a>
+                    <a href="#proceso" class="nav-link hover:text-slate-900 transition-all">Proceso</a>
+                    <a href="#ia" class="nav-link hover:text-slate-900 transition-all">IA</a>
+                    <a href="#opiniones" class="nav-link hover:text-slate-900 transition-all">Opiniones</a>
+                    <a href="#descarga" class="bg-primary text-white px-5 py-2 rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all scale-100 hover:scale-105 active:scale-95">Pre-Registro</a>
+                </nav>
+
+                <!-- Mobile Trigger -->
+                <button class="md:hidden text-slate-900 navbar-mobile-btn">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </header>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="pt-40 md:pt-52 pb-6 md:pb-12 px-6 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
+            <div class="space-y-8 md:space-y-10 flex flex-col items-center lg:items-start text-center lg:text-left" data-aos="fade-right">
+                <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest border border-emerald-100 shadow-sm feature-icon-float">
+                    <span class="animate-pulse">✨</span> IA Nutricional Nivel Elite
+                </div>
+                <h1 class="text-6xl md:text-9xl hero-title font-black leading-[0.9] text-slate-900 tracking-tighter">
+                    Come.<br class="hidden md:block"> Sin <span class="gradient-text">Duda</span>.
+                </h1>
+                <p class="text-xl md:text-2xl hero-subtitle text-slate-500 max-w-lg leading-relaxed font-light">
+                    Detectamos lo que tu cuerpo no tolera. Un escaneo, una respuesta inmediata. La revolución de la seguridad alimentaria.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                    <a href="#descarga" class="bg-dark text-white mobile-w-full px-12 py-5 md:py-6 rounded-[2rem] font-black text-xl btn-premium shadow-2xl text-center flex items-center justify-center">Únete a la Beta</a>
+                    <div class="flex items-center justify-center gap-4 bg-slate-50 mobile-w-full px-6 py-4 rounded-[2rem] border border-slate-100">
+                        <div class="flex -space-x-3">
+                            <img src="https://i.pravatar.cc/100?u=12" class="w-10 h-10 rounded-full border-4 border-white shadow-sm" />
+                            <img src="https://i.pravatar.cc/100?u=13" class="w-10 h-10 rounded-full border-4 border-white shadow-sm" />
+                            <img src="https://i.pravatar.cc/100?u=14" class="w-10 h-10 rounded-full border-4 border-white shadow-sm" />
+                        </div>
+                        <span class="text-sm font-bold text-slate-600">+10k Esperando</span>
+                    </div>
+                </div>
+            </div>
+            <div class="relative flex items-center justify-center lg:justify-end gap-6 md:gap-10 mt-10 md:mt-0" data-aos="zoom-in" data-aos-delay="200">
+                <div class="absolute inset-0 bg-emerald-100 rounded-full blur-[80px] opacity-20 animate-pulse"></div>
+                
+                <!-- Laptop Mockup (Hidden on mobile to emphasize native App UI) -->
+                <div class="relative z-0 w-full max-w-[450px] md:max-w-[680px] perspective-lg hidden md:block">
+                    <div class="transform-3d rotate-y-[10deg] rotate-x-[3deg] hover:rotate-0 transition-all duration-1000 ease-out shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+                        <img src="assets/laptop.png" alt="Eatly Dashboard" class="w-full h-auto rounded-xl border border-slate-200">
+                    </div>
+                </div>
+
+                <!-- Phone Mockup (Hero image on mobile) -->
+                <div class="relative z-10 w-full max-w-[180px] sm:max-w-[220px] md:max-w-[150px] perspective-lg animate-float">
+                    <div class="transform-3d md:rotate-y-[-15deg] md:rotate-x-[5deg] md:hover:rotate-0 transition-all duration-1000 ease-out overflow-hidden rounded-[2rem] md:rounded-[1.8rem] shadow-2xl md:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border-[6px] md:border-[5px] border-slate-900 bg-slate-900 mx-auto">
+                        <img src="assets/1.png" alt="Eatly App" class="w-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Stats -->
+    <section class="py-20 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 text-center bg-slate-900 rounded-[3rem] p-10 md:p-12 lg:p-20 relative overflow-hidden" data-aos="fade-up">
+            <div class="absolute inset-0 bg-primary/5 blur-3xl"></div>
+            <div class="space-y-2 relative z-10 border-r border-white/10 last:border-0">
+                <p class="text-5xl font-black text-white">+1M</p>
+                <p class="text-emerald-400 font-bold uppercase text-[10px] tracking-[0.3em]">Productos Analizados</p>
+            </div>
+            <div class="space-y-2 relative z-10 border-r border-white/10 last:border-0 font-bold">
+                <p class="text-5xl font-black text-white">99.9%</p>
+                <p class="text-emerald-400 font-bold uppercase text-[10px] tracking-[0.3em]">Precisión IA</p>
+            </div>
+            <div class="space-y-2 relative z-10 border-r border-white/10 last:border-0">
+                <p class="text-5xl font-black text-white">24/7</p>
+                <p class="text-emerald-400 font-bold uppercase text-[10px] tracking-[0.3em]">Monitoreo Activo</p>
+            </div>
+            <div class="space-y-2 relative z-10">
+                <p class="text-5xl font-black text-white">Zero</p>
+                <p class="text-emerald-400 font-bold uppercase text-[10px] tracking-[0.3em]">Fugas de Datos</p>
+            </div>
+        </div>
+    </section>
+    <!-- Features Bento Grid -->
+    <section id="features" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20">
+                <div class="space-y-6">
+                    <h2 class="text-6xl font-black tracking-tight leading-none" data-aos="fade-right">Ingeniería para tu <br><span class="gradient-text">vida diaria</span></h2>
+                    <p class="text-xl text-slate-500 max-w-md font-light" data-aos="fade-right" data-aos-delay="100">Soluciones de grado clínico diseñadas para ser invisibles en tu rutina.</p>
+                </div>
+                <div class="bg-emerald-50 px-6 py-3 rounded-2xl border border-emerald-100 flex items-center gap-3" data-aos="fade-left">
+                    <div class="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
+                    <span class="text-sm font-bold text-emerald-700 uppercase tracking-widest">Precision Engine v4.8 (Neural-Link)</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <!-- Large Bento -->
+                <div class="col-span-1 md:col-span-8 bento-card p-14 overflow-hidden relative group" data-aos="fade-up">
+                    <div class="grid md:grid-cols-2 gap-10 items-center">
+                        <div class="space-y-6">
+                            <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100 feature-icon-float">
+                                <i data-lucide="scan-barcode" class="w-8 h-8 text-emerald-600"></i>
+                            </div>
+                            <h3 class="text-4xl font-black tracking-tighter">Guardián Inteligente</h3>
+                            <p class="text-lg text-slate-500 leading-relaxed font-light">
+                                Nuestro escáner no solo detecta riesgos, te cuida. Eatly te sugiere alternativas instantáneas en segundos gracias a la integración con Open Food Facts.
+                            </p>
+                        </div>
+                        <div class="relative scale-90 md:scale-110 transition-transform group-hover:scale-125 duration-700">
+                             <img src="assets/2.png" alt="Scanner Detail" class="w-full rounded-3xl shadow-xl">
+                        </div>
+                    </div>
+                </div>
+                <!-- Small Bento -->
+                <div class="col-span-1 md:col-span-4 bento-card p-12 bg-dark text-white group relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-10">
+                            <i data-lucide="mic" class="w-8 h-8 text-emerald-400"></i>
+                        </div>
+                        <h3 class="text-4xl font-black mb-4 uppercase tracking-tighter leading-none">Voz sin <br>Barreras</h3>
+                        <p class="text-emerald-100/40 leading-relaxed font-light">
+                            Libertad absoluta. Pide a Eatly que verifique alimentos o localice restaurantes seguros usando únicamente tu voz. Tecnología que te escucha y te protege en cada paso.
+                        </p>
+                    </div>
+                    <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-emerald-500/10 to-transparent"></div>
+                </div>
+                <!-- Mini Bento 1 -->
+                <div class="col-span-1 md:col-span-4 bento-card p-12 group hover:bg-emerald-50/50 transition-all" data-aos="fade-up">
+                    <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-8 border border-emerald-100">
+                        <i data-lucide="map-pin" class="w-7 h-7 text-emerald-600"></i>
+                    </div>
+                    <h3 class="text-3xl font-black mb-4 tracking-tight">Radar Gourmet</h3>
+                    <p class="text-slate-500 leading-relaxed">Potenciado por Overpass API. Localiza restaurantes seguros en tiempo real analizando protocolos alérgicos sin depender de APIs corporativas costosas.</p>
+                </div>
+                <!-- Stat 1 -->
+                <div class="col-span-1 md:col-span-2 bento-card p-10 flex flex-col items-center justify-center text-center space-y-4 shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                    <span class="text-4xl font-black text-emerald-500">3,500+</span>
+                    <p class="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Alimentos Indexados</p>
+                </div>
+                <!-- Stat 2 -->
+                <div class="col-span-1 md:col-span-2 bento-card p-10 flex flex-col items-center justify-center text-center space-y-4 shadow-sm" data-aos="fade-up" data-aos-delay="150">
+                    <span class="text-4xl font-black text-emerald-500">99.9%</span>
+                    <p class="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Precisión IA</p>
+                </div>
+                <!-- Mini Bento 2 -->
+                <div class="col-span-1 md:col-span-4 bento-card p-12 group hover:bg-emerald-500 hover:text-white transition-all duration-500" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-8 border border-emerald-100 group-hover:bg-white/20 transition-all font-bold">
+                        <i data-lucide="shield-check" class="w-7 h-7 text-emerald-600 group-hover:text-white transition-all"></i>
+                    </div>
+                    <h3 class="text-3xl font-black mb-4 tracking-tight">Privacidad Ética</h3>
+                    <p class="text-slate-500 group-hover:text-emerald-100 leading-relaxed">Seguridad total de grado médico. Tus datos sensibles están blindados bajo arquitectura Prisma y encriptación local.</p>
+                </div>
+                <!-- Extra Stats Row for Balance -->
+                <div class="col-span-1 md:col-span-3 bento-card p-8 flex flex-col items-center justify-center text-center space-y-2" data-aos="fade-up" data-aos-delay="300">
+                    <span class="text-3xl font-black text-slate-900">24/7</span>
+                    <p class="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Protección Activa</p>
+                </div>
+                <div class="col-span-1 md:col-span-3 bento-card p-8 flex flex-col items-center justify-center text-center space-y-2" data-aos="fade-up" data-aos-delay="350">
+                    <span class="text-3xl font-black text-slate-900">Zero</span>
+                    <p class="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Fugas de Datos</p>
+                </div>
+                <div class="col-span-1 md:col-span-6 bento-card p-8 flex items-center justify-center gap-6 bg-slate-50" data-aos="fade-up" data-aos-delay="400">
+                    <div class="flex gap-1 animate-pulse">
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                        <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    </div>
+                    <p class="text-sm font-bold text-slate-400 uppercase tracking-widest italic">Monitoreo del Motor Neural en Tiempo Real</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Manifesto Section -->
+    <section id="manifiesto" class="py-40 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-24 items-center">
+                <div class="space-y-12" data-aos="fade-right">
+                    <div class="bg-primary/10 text-primary px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest inline-block">Nuestro Manifiesto</div>
+                    <h2 class="text-6xl font-black tracking-tight leading-none text-slate-900">Democratizando la <br><span class="gradient-text">Seguridad Alimentaria</span></h2>
+                    <p class="text-2xl text-slate-500 font-light leading-relaxed">
+                        En Eatly, creemos que comer no debería ser una fuente de ansiedad. Nacimos de la necesidad de devolver el control a quienes viven con restricciones severas, utilizando la IA no solo como una herramienta, sino como un escudo vital.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-10">
+                        <div class="space-y-4">
+                            <h4 class="text-xl font-bold text-slate-900">Inclusión Radical</h4>
+                            <p class="text-slate-500">Diseñado para cada alergia, desde las comunes hasta las más raras y críticas.</p>
+                        </div>
+                        <div class="space-y-4">
+                            <h4 class="text-xl font-bold text-slate-900">Transparencia Total</h4>
+                            <p class="text-slate-500">Acceso abierto a la información molecular de cada producto escaneado.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative flex justify-center lg:justify-end" data-aos="fade-left">
+                     <div class="w-full max-w-md aspect-video rounded-3xl overflow-hidden shadow-xl border-4 border-slate-50 rotate-2 hover:rotate-0 transition-transform duration-500">
+                         <img src="assets/3.png" alt="Manifiesto" class="w-full h-full object-cover">
+                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="py-40 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-32">
+                <h2 class="text-6xl font-black tracking-tight mb-6" data-aos="fade-up">Eatly <span class="gradient-text">Roadmap</span> 2026</h2>
+                <p class="text-slate-500 text-xl font-light" data-aos="fade-up" data-aos-delay="100">Hacia un mundo sin etiquetas confusas.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Q1 - Current Status -->
+                <div class="bento-card p-10 space-y-6 bg-white border-2 border-emerald-100" data-aos="fade-right">
+                    <div class="flex items-center justify-between">
+                        <span class="text-3xl font-black text-emerald-500">Q1 2026</span>
+                        <div class="bg-emerald-500 h-2 w-2 rounded-full animate-ping"></div>
+                    </div>
+                    <h4 class="text-xl font-bold">Lanzamiento Beta</h4>
+                    <p class="text-slate-500 text-sm">Apertura para los primeros 10,000 usuarios en Latinoamérica. Enfoque en robustez de escaneo y alertas críticas.</p>
+                    <ul class="text-[12px] font-bold text-slate-400 space-y-2 uppercase tracking-wider">
+                        <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Core Engine 1.0</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> API Integration</li>
+                    </ul>
+                </div>
+
+                <!-- Project Mission / 5th Year Context -->
+                <div class="md:col-span-2 bento-card p-12 bg-slate-900 text-white relative overflow-hidden group" data-aos="fade-left">
+                    <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="graduation-cap" class="w-40 h-40"></i>
+                    </div>
+                    <div class="relative z-10 space-y-8">
+                        <div class="bg-primary/20 text-primary px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest inline-block border border-primary/30">Proyecto de 5to Año</div>
+                        <h4 class="text-4xl font-black tracking-tighter">Impacto Social & <br><span class="text-primary text-emerald-400">Excelencia Académica</span></h4>
+                        <p class="text-slate-400 text-lg font-light leading-relaxed max-w-xl">
+                            Eatly no es solo una app comercial; es el resultado de una investigación profunda de 5to año. Nuestra misión es generar una mejora tangible en la sociedad, eliminando la ansiedad de miles de personas con restricciones alimentarias severas. Creemos en la tecnología como un puente para la inclusión y el bienestar colectivo.
+                        </p>
+                        <div class="flex items-center gap-6 pt-4">
+                            <div class="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                <i data-lucide="heart" class="w-4 h-4 text-rose-500"></i> Social Focus
+                            </div>
+                            <div class="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                <i data-lucide="book-open" class="w-4 h-4 text-sky-500"></i> Research-Driven
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Feature Deep-Dive -->
+    <section class="py-40 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-20">
+                <div class="space-y-12 col-span-2">
+                    <h2 class="text-7xl font-black tracking-tighter leading-none" data-aos="fade-right">Información <br><span class="gradient-text">Sin Filtros</span></h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-16">
+                        <div class="space-y-6" data-aos="fade-up">
+                            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-primary">
+                                <i data-lucide="database" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-2xl font-black">Revolución Tecnológica Libre</h4>
+                            <p class="text-slate-500 font-light leading-relaxed">
+                                ¡Apostamos por el futuro colaborativo! Utilizamos Open Food Facts para darte acceso a millones de productos, OpenStreetMap + Leaflet para guiar tus pasos, y la increíble Overpass API para detectar vida en restaurantes locales. Sin costes de API inflados, solo la pureza de datos reales y precisos al servicio de tu salud.
+                            </p>
+                        </div>
+                        <div class="space-y-6" data-aos="fade-up" data-aos-delay="100">
+                            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-primary">
+                                <i data-lucide="map-pin" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-2xl font-black">Geolocalización con Alma</h4>
+                            <p class="text-slate-500 font-light leading-relaxed">Nos importa tu paz mental. Usamos Nominatim para encontrarte el restaurante perfecto mediante geocoding inverso, pero sin rastrear jamás quién eres. Tu ubicación es un dato sagrado que solo sirve para protegerte, de forma efímera y radicalmente segura.</p>
+                        </div>
+                        <div class="space-y-6" data-aos="fade-up" data-aos-delay="200">
+                            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-primary">
+                                <i data-lucide="waves" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-2xl font-black">El Poder de lo Nativo</h4>
+                            <p class="text-slate-500 font-light leading-relaxed">Exprimimos cada gota de potencia de tu smartphone. Con Web Speech API hablas con tu comida y el motor neural responde al instante, mientras que las Web Notifications te alertan de riesgos antes de que ocurran. Latencia cero, protección infinita.</p>
+                        </div>
+                        <div class="space-y-6" data-aos="fade-up" data-aos-delay="300">
+                            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-primary">
+                                <i data-lucide="hard-drive" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-2xl font-black">Persistencia Híbrida</h4>
+                            <p class="text-slate-500 font-light leading-relaxed">Tu seguridad no depende de una señal WiFi. Nuestra sincronización blinda tus datos en SQLite local y los respalda bajo encriptación Prisma.</p>
+                            <div class="pt-6">
+                                <div class="rounded-2xl overflow-hidden border border-slate-100 shadow-inner bg-slate-50 p-2">
+                                    <img src="assets/4.png" alt="Data Protection" class="rounded-xl w-full object-cover max-h-[180px] grayscale hover:grayscale-0 transition-all duration-700">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative pt-20" data-aos="fade-left">
+                    <!-- Image Placeholder for Tech Stack / Detail -->
+                     <div class="w-full bg-slate-900 rounded-[3rem] p-12 aspect-[4/5] relative overflow-hidden flex flex-col justify-end">
+                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                         <div class="relative z-20 space-y-4">
+                             <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                                 <i data-lucide="smartphone" class="w-6 h-6 text-white"></i>
+                             </div>
+                             <h5 class="text-2xl font-bold text-white">UI/UX Nativo</h5>
+                             <p class="text-slate-400 text-sm">Diseño optimizado para una respuesta táctil instantánea y lectura a pleno sol (Beta Edition).</p>
+                         </div>
+                         <p class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/10 font-black uppercase tracking-[1em] -rotate-45 whitespace-nowrap text-2xl">[CAPTURA DE PANTALLA APP]</p>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Voice Commands Section -->
+    <section id="voz" class="py-40 bg-slate-900 text-white overflow-hidden relative">
+        <!-- Background glow -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.1),transparent_70%)]"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row gap-24 items-center">
+                <div class="lg:w-1/2 space-y-10" data-aos="fade-right">
+                    <div class="inline-flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 px-6 py-2 rounded-full">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-emerald-400 text-xs font-black uppercase tracking-widest">🎤 Comandos de Voz - FUNCIONANDO</span>
+                    </div>
+                    <h2 class="text-6xl font-black tracking-tighter leading-none">Interactúa con <br><span class="text-emerald-500">Manos Libres</span></h2>
+                    <p class="text-xl text-slate-400 font-light leading-relaxed">
+                        Eatly utiliza la **Web Speech API** nativa para procesar tus comandos localmente. Olvídate de escribir mientras cocinas o haces la compra; simplemente habla y la app obedecerá.
+                    </p>
+                    <div class="flex items-center gap-8 pt-6">
+                        <div class="flex -space-x-4">
+                            <div class="w-12 h-12 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center"><i data-lucide="mic" class="w-5 h-5 text-emerald-500"></i></div>
+                            <div class="w-12 h-12 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center"><i data-lucide="brain-circuit" class="w-5 h-5 text-emerald-500"></i></div>
+                            <div class="w-12 h-12 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center"><i data-lucide="zap" class="w-5 h-5 text-emerald-500"></i></div>
+                        </div>
+                        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">IA Procesada en el Dispositivo</p>
+                    </div>
+                </div>
+                
+                <div class="lg:w-1/2 w-full" data-aos="fade-left">
+                    <div class="bento-card border-slate-800 bg-white/5 backdrop-blur-xl p-8 md:p-12 overflow-hidden">
+                        <div class="flex items-center justify-between mb-10">
+                            <h3 class="text-2xl font-black">Diccionario de Comandos</h3>
+                            <i data-lucide="terminal" class="w-6 h-6 text-emerald-500"></i>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-slate-500 text-xs font-black uppercase tracking-widest">
+                                        <th class="pb-4 pr-6">Comando</th>
+                                        <th class="pb-4">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm font-medium">
+                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
+                                        <td class="py-4 pr-6 text-emerald-400 italic">"Agregar alergia a [alimento]"</td>
+                                        <td class="py-4 text-slate-300">Abre modal con el alimento</td>
+                                    </tr>
+                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
+                                        <td class="py-4 pr-6 text-emerald-400 italic">"Tengo alergia a [alimento]"</td>
+                                        <td class="py-4 text-slate-300">Identifica restricción al instante</td>
+                                    </tr>
+                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
+                                        <td class="py-4 pr-6 text-emerald-400 italic">"Agregar alimento [nombre]"</td>
+                                        <td class="py-4 text-slate-300">Suma item a tu diario</td>
+                                    </tr>
+                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
+                                        <td class="py-4 pr-6 text-emerald-400 italic">"Escanear producto"</td>
+                                        <td class="py-4 text-slate-300">Activa escáner real</td>
+                                    </tr>
+                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
+                                        <td class="py-4 pr-6 text-emerald-400 italic">"Ver mapa / Restaurantes"</td>
+                                        <td class="py-4 text-slate-300">Abre el mapa</td>
+                                    </tr>
+                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
+                                        <td class="py-4 pr-6 text-emerald-400 italic">"Ir a inicio/restricciones"</td>
+                                        <td class="py-4 text-slate-300">Navega por la app</td>
+                                    </tr>
+                                    <tr class="group hover:bg-white/5 transition-colors">
+                                        <td class="py-4 pr-6 text-emerald-400 italic">"Ayuda"</td>
+                                        <td class="py-4 text-slate-300">Muestra comandos disponibles</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-10 pt-10 border-t border-white/10 flex items-center gap-4">
+                            <div class="flex gap-1">
+                                <div class="w-1 h-4 bg-emerald-500 animate-[bounce_1s_infinite]"></div>
+                                <div class="w-1 h-6 bg-emerald-500 animate-[bounce_1.2s_infinite]"></div>
+                                <div class="w-1 h-3 bg-emerald-500 animate-[bounce_0.8s_infinite]"></div>
+                                <div class="w-1 h-5 bg-emerald-500 animate-[bounce_1.1s_infinite]"></div>
+                            </div>
+                            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Escuchando activamente...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Legal Sections (Anchors only for now) -->
+    <section id="privacidad" class="py-40 bg-slate-50">
+        <div class="max-w-4xl mx-auto px-6 space-y-10">
+            <h2 class="text-4xl font-black tracking-tight" data-aos="fade-up">Privacidad de <span class="gradient-text">Grado Médico</span></h2>
+            <div class="grid gap-8" data-aos="fade-up">
+                <div class="p-8 bg-white rounded-3xl border border-slate-100 space-y-4">
+                    <p class="text-blue-600 font-black text-xs uppercase tracking-widest">Compromiso 01</p>
+                    <h4 class="text-xl font-bold">Encriptación Extremo a Extremo</h4>
+                    <p class="text-slate-500 leading-relaxed">Tus restricciones alimentarias se consideran datos de salud sensibles. Solo tú y las personas a las que autorices explícitamente pueden ver este perfil.</p>
+                </div>
+                <div class="p-8 bg-white rounded-3xl border border-slate-100 space-y-4">
+                    <p class="text-blue-600 font-black text-xs uppercase tracking-widest">Compromiso 02</p>
+                    <h4 class="text-xl font-bold">Sin Venta de Datos</h4>
+                    <p class="text-slate-500 leading-relaxed">Eatly no vende ni comparte tus perfiles de dieta con anunciantes o terceros bajo ninguna circunstancia comercial.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="terminos" class="py-40 bg-white">
+        <div class="max-w-4xl mx-auto px-6 space-y-10">
+            <h2 class="text-4xl font-black tracking-tight" data-aos="fade-up">Términos de <span class="gradient-text">Uso</span></h2>
+            <div class="prose prose-slate max-w-none text-slate-500" data-aos="fade-up">
+                <p class="mb-6">Al utilizar Eatly, aceptas que nuestra IA es una herramienta de asistencia y no reemplaza el consejo médico profesional. Siempre verifica las etiquetas físicas de los productos en caso de dudas críticas.</p>
+                <div class="grid sm:grid-cols-2 gap-8">
+                    <ul class="space-y-3 font-bold text-sm uppercase tracking-wider text-slate-400">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-primary"></i> Uso Personal Solamente</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-primary"></i> Responsabilidad del Usuario</li>
+                    </ul>
+                    <ul class="space-y-3 font-bold text-sm uppercase tracking-wider text-slate-400">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-primary"></i> Actualización de Datos</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-primary"></i> Respeto Alimentario</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="opiniones" class="py-40 px-6 bg-slate-50">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-6xl font-black text-center mb-32 tracking-tight" data-aos="fade-up">Voces de la <span class="gradient-text">Comunidad</span></h2>
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="bento-card p-12 space-y-10 border-none bg-white shadow-xl shadow-slate-200/50" data-aos="fade-up">
+                    <p class="text-2xl italic text-slate-700 leading-relaxed font-light">"Ya no siento la ansiedad de comer fuera. Eatly es mi escudo digital contra las alergias."</p>
+                    <div class="flex items-center gap-6">
+                        <img src="https://i.pravatar.cc/100?u=4" class="w-16 h-16 rounded-2xl ring-4 ring-slate-50 shadow-md" alt="Usuario Elena">
+                        <div>
+                            <p class="font-black text-xl text-slate-900">Elena S.</p>
+                            <p class="text-primary text-[10px] font-black uppercase tracking-widest">Alérgica Severa</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bento-card p-12 space-y-10 border-none bg-slate-900 text-white shadow-2xl shadow-emerald-500/10" data-aos="fade-up" data-aos-delay="100">
+                    <p class="text-2xl italic text-slate-200 leading-relaxed font-light">"La herramienta definitiva para nutricionistas pediátricos. No tiene competencia técnica."</p>
+                    <div class="flex items-center gap-6">
+                        <img src="https://i.pravatar.cc/100?u=5" class="w-16 h-16 rounded-2xl ring-4 ring-white/10 shadow-md" alt="Usuario Carlos">
+                        <div>
+                            <p class="font-black text-xl text-white">Dr. Carlos V.</p>
+                            <p class="text-primary text-[10px] font-black uppercase tracking-widest">Director Médico</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bento-card p-12 space-y-10 border-none bg-emerald-50 shadow-xl shadow-emerald-200/50" data-aos="fade-up" data-aos-delay="200">
+                    <p class="text-2xl italic text-slate-700 leading-relaxed font-light">"El escaneo por voz es otro nivel. Mi hijo de 8 años ya sabe qué puede comer solo en casa."</p>
+                    <div class="flex items-center gap-6">
+                        <img src="https://i.pravatar.cc/100?u=6" class="w-16 h-16 rounded-2xl ring-4 ring-white shadow-md" alt="Usuario Laura">
+                        <div>
+                            <p class="font-black text-xl text-slate-900">Laura M.</p>
+                            <p class="text-primary text-[10px] font-black uppercase tracking-widest">Usuario Beta Elite</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-40 px-6 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-5xl font-black text-center mb-24 tracking-tight" data-aos="fade-up">Preguntas <span class="gradient-text">Frecuentes</span></h2>
+            <div class="space-y-6">
+                <!-- FAQ Item 1 -->
+                <div class="bento-card p-8 group cursor-pointer hover:bg-slate-50 transition-all border-slate-100" data-aos="fade-up">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xl font-bold text-slate-900 tracking-tight">¿Es Eatly apto para alérgicos crónicos?</h4>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 group-hover:text-primary transition-all"></i>
+                    </div>
+                    <p class="mt-4 text-slate-500 font-light leading-relaxed hidden group-hover:block transition-all">Absolutamente. Nuestra IA está entrenada con bases de datos toxicológicas y la API de Open Food Facts para detectar no solo ingredientes principales, sino trazas por contaminación cruzada.</p>
+                </div>
+                <!-- FAQ Item 2 -->
+                <div class="bento-card p-8 group cursor-pointer hover:bg-slate-50 transition-all border-slate-100" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xl font-bold text-slate-900 tracking-tight">¿Qué pasa si no tengo internet en el súper?</h4>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 group-hover:text-primary transition-all"></i>
+                    </div>
+                    <p class="mt-4 text-slate-500 font-light leading-relaxed hidden group-hover:block transition-all">Eatly almacena una caché local de tus 5,000 productos más comunes. El escaneo básico por código de barras funciona offline.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final Call -->
+    <section id="descarga" class="py-32 md:py-52 px-6 text-center bg-white relative overflow-hidden">
+        <div class="absolute top-1/2 left-0 w-60 h-60 md:w-80 md:h-80 bg-primary/10 rounded-full blur-[80px] md:blur-[120px] -translate-y-1/2"></div>
+        <div class="absolute top-1/2 right-0 w-60 h-60 md:w-80 md:h-80 bg-emerald-500/10 rounded-full blur-[80px] md:blur-[120px] -translate-y-1/2"></div>
+
+        <div class="max-w-5xl mx-auto space-y-10 md:space-y-14 relative z-10" data-aos="zoom-in">
+            <h2 class="text-6xl md:text-[9.5rem] font-black tracking-tighter leading-[0.9] mb-8 md:mb-14 hero-title">Llegó el <br><span class="gradient-text">Momento</span>.</h2>
+            <p class="text-xl md:text-2xl text-slate-500 font-light max-w-3xl mx-auto leading-relaxed px-4">Únete a la revolución de las Apps de Restricciones Alimentarias y Recomendaciones más avanzada del mercado.</p>
+            <div class="flex flex-col sm:flex-row gap-6 md:gap-10 justify-center items-center pt-8 md:pt-10 w-full">
+                <button id="btn-download-apk" class="bg-dark mobile-w-full text-white px-8 md:px-16 py-6 md:py-8 rounded-[2rem] md:rounded-[2.5rem] font-black text-xl md:text-2xl bg-slate-900 shadow-2xl flex items-center justify-center gap-4 md:gap-5 group ring-0 hover:ring-4 hover:ring-dark/20 transition-all active:scale-95">
+                    Descargar Eatly APK
+                    <i data-lucide="arrow-right" class="w-6 h-6 md:w-8 md:h-8 group-hover:translate-x-3 transition-transform"></i>
+                </button>
+                <div class="flex flex-row md:flex-col items-center md:items-start justify-center text-center md:text-left border-t-2 md:border-t-0 md:border-l-2 border-slate-100 pt-6 md:pt-0 md:pl-10 w-full sm:w-auto">
+                    <span class="text-xs md:text-sm font-black text-emerald-500 uppercase tracking-widest mr-3 md:mr-0">BUILD 1.0.4-X</span>
+                    <span class="text-lg md:text-xl font-bold text-slate-400">Stable & Secure</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-24 text-center border-t border-slate-100 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-start gap-16">
+            <div class="space-y-8 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                        <i data-lucide="leaf" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter">Eatly</span>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-slate-900 font-bold text-sm uppercase tracking-widest">Sobre la App</p>
+                    <p class="text-slate-400 text-sm max-w-xs leading-relaxed font-medium">Eatly es una iniciativa de grado clínico para transformar la seguridad alimentaria mundial mediante Inteligencia Artificial y Datos Abiertos.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-20 text-left">
+                <div class="space-y-4">
+                    <p class="font-black text-sm uppercase tracking-widest text-slate-900">Proyecto</p>
+                    <nav class="flex flex-col gap-2 text-slate-500 font-bold text-sm">
+                        <a href="#manifiesto" class="hover:text-primary transition-colors">Manifesto</a>
+                        <a href="#roadmap" class="hover:text-primary transition-colors">Roadmap</a>
+                    </nav>
+                </div>
+                <div class="space-y-4">
+                    <p class="font-black text-sm uppercase tracking-widest text-slate-900">Legal</p>
+                    <nav class="flex flex-col gap-2 text-slate-500 font-bold text-sm">
+                        <a href="#privacidad" class="hover:text-primary transition-colors">Privacidad</a>
+                        <a href="#terminos" class="hover:text-primary transition-colors">Términos</a>
+                    </nav>
+                </div>
+                <div class="space-y-8">
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-slate-200 cursor-pointer hover:bg-primary hover:text-white transition-all">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-slate-200 cursor-pointer hover:bg-primary hover:text-white transition-all">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em]">Eatly Intelligence © 2026</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Download Overlay Simulation HTML Elements -->
+    <div id="download-overlay" class="fixed inset-0 z-[999] bg-slate-900/95 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] p-8 md:p-12 max-w-lg w-full mx-4 md:mx-6 shadow-2xl transform scale-95 transition-transform duration-300 border border-slate-100" id="download-modal">
+            
+            <!-- Loading State -->
+            <div id="download-loading" class="flex flex-col items-center text-center space-y-4 md:space-y-6">
+                <div class="relative w-20 h-20 md:w-28 md:h-28 mb-2 md:mb-4">
+                    <div class="absolute inset-0 border-[4px] md:border-[6px] border-slate-100 rounded-full scale-100"></div>
+                    <div class="absolute inset-0 border-[4px] md:border-[6px] border-primary rounded-full border-t-transparent animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-8 h-8 md:w-10 md:h-10 text-primary animate-pulse"></i>
+                    </div>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tighter" id="download-title">Iniciando protocolo...</h3>
+                <p class="text-slate-500 font-medium text-sm md:text-lg" id="download-desc">Estableciendo conexión encriptada con los servidores.</p>
+                <div class="w-full bg-slate-100 h-2 md:h-3 rounded-full overflow-hidden mt-4 md:mt-6 shadow-inner">
+                    <div id="download-progress" class="bg-primary h-full w-0 transition-all duration-300 ease-out"></div>
+                </div>
+            </div>
+
+            <!-- Success State -->
+            <div id="download-success" class="hidden flex-col items-center text-center space-y-4 md:space-y-6">
+                <div class="w-20 h-20 md:w-28 md:h-28 bg-emerald-50 rounded-full flex items-center justify-center border-4 border-emerald-100 mb-0 md:mb-2 relative">
+                    <div class="absolute inset-0 border-4 border-emerald-500 rounded-full animate-ping opacity-20"></div>
+                    <i data-lucide="check-circle-2" class="w-10 h-10 md:w-14 md:h-14 text-emerald-500"></i>
+                </div>
+                <h3 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter leading-none">¡Descarga <br class="md:hidden">Completada!</h3>
+                <p class="text-slate-500 font-medium leading-relaxed text-sm md:text-base">
+                    Felicidades, la transferencia de <strong>Eatly.apk</strong> se ha efectuado.
+                </p>
+                <div class="bg-emerald-50 border border-emerald-100 p-4 md:p-5 rounded-2xl w-full text-left flex gap-3 md:gap-4 items-start mt-2">
+                    <i data-lucide="info" class="w-5 h-5 md:w-6 md:h-6 text-emerald-600 shrink-0 mt-0.5"></i>
+                    <p class="text-[11px] md:text-[13px] text-emerald-800 font-medium leading-relaxed">
+                        Acepta el permiso temporal de <strong>"Orígenes Desconocidos"</strong> en Android para terminar.
+                    </p>
+                </div>
+                <button id="btn-close-modal" class="w-full mt-2 md:mt-4 bg-slate-900 hover:bg-emerald-600 text-white font-black text-base md:text-lg py-4 md:py-5 rounded-[1.5rem] transition-all hover:scale-[1.02] active:scale-95 shadow-xl">
+                    Volver al Inicio
+                </button>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Loader Control
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                }, 800);
+            }, 1000);
+        });
+
+        lucide.createIcons();
+        AOS.init({ duration: 1200, once: true, offset: 50 });
+        
+        // Scroll Logic for dynamic navbar & fluidity
+        const header = document.getElementById('main-header');
+        const logoText = document.querySelector('.navbar-logo-text');
+        
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY;
+            
+            if (scrollPos > 100) {
+                header.classList.add('shadow-2xl', 'scale-95');
+                header.style.top = '1.5rem';
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+            } else {
+                header.classList.remove('shadow-2xl', 'scale-95');
+                header.style.top = '2rem';
+                header.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+            }
+
+            // Dark Mode Context Detection
+            const iaSection = document.getElementById('ia');
+            const iaRect = iaSection ? iaSection.getBoundingClientRect() : { top: 0, bottom: 0 };
+            
+            if (iaSection && iaRect.top < 80 && iaRect.bottom > 80) {
+                header.style.backgroundColor = 'rgba(15, 23, 42, 0.9)';
+                header.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                header.querySelectorAll('.nav-link').forEach(link => link.style.color = 'rgba(255, 255, 255, 0.7)');
+                logoText.style.color = 'white';
+                const mobileBtn = header.querySelector('.navbar-mobile-btn');
+                if (mobileBtn) mobileBtn.style.color = 'white';
+            } else {
+                header.querySelectorAll('.nav-link').forEach(link => link.style.color = '');
+                logoText.style.color = '';
+                const mobileBtn = header.querySelector('.navbar-mobile-btn');
+                if (mobileBtn) mobileBtn.style.color = '';
+                header.style.borderColor = '';
+            }
+        });
+
+        // Smooth Scrolling for anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Download Modal Simulation
+        const btnDownload = document.getElementById('btn-download-apk');
+        const overlay = document.getElementById('download-overlay');
+        const modal = document.getElementById('download-modal');
+        const loadingState = document.getElementById('download-loading');
+        const successState = document.getElementById('download-success');
+        const btnCloseModal = document.getElementById('btn-close-modal');
+        const titleEl = document.getElementById('download-title');
+        const descEl = document.getElementById('download-desc');
+        const progressEl = document.getElementById('download-progress');
+
+        if (btnDownload && overlay && modal) {
+            btnDownload.addEventListener('click', (e) => {
+                e.preventDefault();
+                loadingState.style.display = 'flex';
+                successState.style.display = 'none';
+                progressEl.style.width = '0%';
+                
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.remove('scale-95');
+                modal.classList.add('scale-100');
+
+                // Pre-cargamos el enlace original para evitar pérdida de clic
+                const link = document.createElement('a');
+                link.href = 'assets/Eatly.apk';
+                link.download = 'Eatly-Protected-Version.apk';
+
+                setTimeout(() => {
+                    titleEl.innerText = "Preparando paquete...";
+                    descEl.innerText = "Verificando firmas y certificados de seguridad (v1/v2/v3).";
+                    progressEl.style.width = '40%';
+                }, 1500);
+
+                setTimeout(() => {
+                    titleEl.innerText = "Generando versión estable...";
+                    descEl.innerText = "Optimizando módulos y librerías del ejecutable para tu dispositivo.";
+                    progressEl.style.width = '75%';
+                }, 3500);
+
+                setTimeout(() => {
+                    progressEl.style.width = '100%';
+                    titleEl.innerText = "¡Validación Estricta Superada!";
+                    descEl.innerText = "Iniciando transferencia del APK de Eatly...";
+                }, 5500);
+
+                setTimeout(() => {
+                    loadingState.style.display = 'none';
+                    successState.style.display = 'flex';
+                    successState.classList.add('reveal-up', 'active');
+
+                    // Descarga automática segura
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 6500);
+            });
+        }
+
+        if (btnCloseModal && overlay && modal) {
+            btnCloseModal.addEventListener('click', () => {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                modal.classList.remove('scale-100');
+                modal.classList.add('scale-95');
+                
+                // Return to home scroll properly and fluidly
+                setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 400);
+            });
+        }
+    </script>
+</body>
+</html>
