@@ -208,7 +208,6 @@
                 <nav class="hidden md:flex items-center gap-8 text-[13px] font-bold text-slate-500 py-2">
                     <a href="https://eatly-lyart.vercel.app/" target="_blank" class="nav-link hover:text-slate-900 transition-all">App Móvil</a>
                     <a href="#features" class="nav-link hover:text-slate-900 transition-all">Funciones</a>
-                    <a href="https://eatly-lyart.vercel.app/?action=chat" target="_blank" class="nav-link hover:text-slate-900 transition-all text-primary">Chat IA</a>
                     <a href="#opiniones" class="nav-link hover:text-slate-900 transition-all">Opiniones</a>
                     <a href="https://eatly-lyart.vercel.app/" target="_blank" class="bg-primary text-white px-5 py-2 rounded-full hover:shadow-lg hover:shadow-primary/30 transition-all scale-100 hover:scale-105 active:scale-95">Ir a la App</a>
                 </nav>
@@ -232,9 +231,6 @@
                     App Móvil <i data-lucide="external-link" class="w-6 h-6"></i>
                 </a>
                 <a href="#features" class="mobile-nav-link text-3xl font-black hover:text-primary transition-colors">Funciones</a>
-                <a href="https://eatly-lyart.vercel.app/?action=chat" target="_blank" class="mobile-nav-link text-3xl font-black text-primary flex items-center gap-4">
-                    Roko IA <i data-lucide="sparkles" class="w-6 h-6"></i>
-                </a>
                 <a href="#opiniones" class="mobile-nav-link text-3xl font-black hover:text-primary transition-colors">Opiniones</a>
                 
                 <div class="pt-10 w-full">
@@ -350,19 +346,19 @@
                         </div>
                     </div>
                 </div>
-                <!-- Small Bento -->
-                <a href="https://eatly-lyart.vercel.app/?action=chat" target="_blank" class="col-span-1 md:col-span-4 bento-card p-8 md:p-12 bg-dark text-white group relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                <!-- Alternative Bento for Balance -->
+                <div class="col-span-1 md:col-span-4 bento-card p-8 md:p-12 bg-dark text-white group relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
                     <div class="relative z-10">
                         <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-6 md:mb-10">
-                            <i data-lucide="mic" class="w-8 h-8 text-emerald-400"></i>
+                            <i data-lucide="shield-check" class="w-8 h-8 text-emerald-400"></i>
                         </div>
-                        <h3 class="text-3xl md:text-4xl font-black mb-4 uppercase tracking-tighter leading-none">Voz sin <br>Barreras</h3>
+                        <h3 class="text-3xl md:text-4xl font-black mb-4 uppercase tracking-tighter leading-none">Datos <br>Seguros</h3>
                         <p class="text-sm md:text-base text-emerald-100/40 leading-relaxed font-light">
-                            Libertad absoluta. Pide a Eatly que verifique alimentos o localice restaurantes seguros usando únicamente tu voz. Tecnología que te escucha y te protege en cada paso.
+                            Tus restricciones son sagradas. Eatly no almacena copias externas sin tu permiso. Todo se procesa con encriptación local Prisma para tu tranquilidad.
                         </p>
                     </div>
                     <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-emerald-500/10 to-transparent"></div>
-                </a>
+                </div>
                 <!-- Mini Bento 1 -->
                 <a href="https://eatly-lyart.vercel.app/?action=restaurants" target="_blank" class="col-span-1 md:col-span-4 bento-card p-12 group hover:bg-emerald-50/50 transition-all" data-aos="fade-up">
                     <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center mb-8 border border-emerald-100">
@@ -551,95 +547,6 @@
         </div>
     </section>
 
-    <!-- Voice Commands Section -->
-    <section id="voz" class="py-40 bg-slate-900 text-white overflow-hidden relative">
-        <!-- Background glow -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.1),transparent_70%)]"></div>
-        
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="flex flex-col lg:flex-row gap-24 items-center">
-                <div class="lg:w-1/2 space-y-10" data-aos="fade-right">
-                    <div class="inline-flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 px-6 py-2 rounded-full">
-                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                        <span class="text-emerald-400 text-xs font-black uppercase tracking-widest">🎤 Comandos de Voz - FUNCIONANDO</span>
-                    </div>
-                    <h2 class="text-6xl font-black tracking-tighter leading-none">Interactúa con <br><span class="text-emerald-500">Manos Libres</span></h2>
-                    <p class="text-xl text-slate-400 font-light leading-relaxed">
-                        Eatly utiliza la **Web Speech API** nativa para procesar tus comandos localmente. Olvídate de escribir mientras cocinas o haces la compra; simplemente habla y la app obedecerá.
-                    </p>
-                    <div class="flex items-center gap-8 pt-6">
-                        <div class="flex -space-x-4">
-                            <div class="w-12 h-12 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center"><i data-lucide="mic" class="w-5 h-5 text-emerald-500"></i></div>
-                            <div class="w-12 h-12 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center"><i data-lucide="brain-circuit" class="w-5 h-5 text-emerald-500"></i></div>
-                            <div class="w-12 h-12 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center"><i data-lucide="zap" class="w-5 h-5 text-emerald-500"></i></div>
-                        </div>
-                        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">IA Procesada en el Dispositivo</p>
-                    </div>
-                </div>
-                
-                <div class="lg:w-1/2 w-full" data-aos="fade-left">
-                    <div class="bento-card border-slate-800 bg-white/5 backdrop-blur-xl p-8 md:p-12 overflow-hidden">
-                        <div class="flex items-center justify-between mb-10">
-                            <h3 class="text-2xl font-black">Diccionario de Comandos</h3>
-                            <i data-lucide="terminal" class="w-6 h-6 text-emerald-500"></i>
-                        </div>
-                        
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead>
-                                    <tr class="border-b border-white/10 text-slate-500 text-xs font-black uppercase tracking-widest">
-                                        <th class="pb-4 pr-6">Comando</th>
-                                        <th class="pb-4">Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-sm font-medium">
-                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
-                                        <td class="py-4 pr-6 text-emerald-400 italic">"Agregar alergia a [alimento]"</td>
-                                        <td class="py-4 text-slate-300">Abre modal con el alimento</td>
-                                    </tr>
-                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
-                                        <td class="py-4 pr-6 text-emerald-400 italic">"Tengo alergia a [alimento]"</td>
-                                        <td class="py-4 text-slate-300">Identifica restricción al instante</td>
-                                    </tr>
-                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
-                                        <td class="py-4 pr-6 text-emerald-400 italic">"Agregar alimento [nombre]"</td>
-                                        <td class="py-4 text-slate-300">Suma item a tu diario</td>
-                                    </tr>
-                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
-                                        <td class="py-4 pr-6 text-emerald-400 italic">"Escanear producto"</td>
-                                        <td class="py-4 text-slate-300">Activa escáner real</td>
-                                    </tr>
-                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
-                                        <td class="py-4 pr-6 text-emerald-400 italic">"Ver mapa / Restaurantes"</td>
-                                        <td class="py-4 text-slate-300">Abre el mapa</td>
-                                    </tr>
-                                    <tr class="border-b border-white/5 group hover:bg-white/5 transition-colors">
-                                        <td class="py-4 pr-6 text-emerald-400 italic">"Ir a inicio/restricciones"</td>
-                                        <td class="py-4 text-slate-300">Navega por la app</td>
-                                    </tr>
-                                    <tr class="group hover:bg-white/5 transition-colors">
-                                        <td class="py-4 pr-6 text-emerald-400 italic">"Ayuda"</td>
-                                        <td class="py-4 text-slate-300">Muestra comandos disponibles</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div class="mt-10 pt-10 border-t border-white/10 flex items-center gap-4">
-                            <div class="flex gap-1">
-                                <div class="w-1 h-4 bg-emerald-500 animate-[bounce_1s_infinite]"></div>
-                                <div class="w-1 h-6 bg-emerald-500 animate-[bounce_1.2s_infinite]"></div>
-                                <div class="w-1 h-3 bg-emerald-500 animate-[bounce_0.8s_infinite]"></div>
-                                <div class="w-1 h-5 bg-emerald-500 animate-[bounce_1.1s_infinite]"></div>
-                            </div>
-                            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Escuchando activamente...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Legal Sections (Anchors only for now) -->
     <section id="privacidad" class="py-40 bg-slate-50">
         <div class="max-w-4xl mx-auto px-6 space-y-10">
@@ -794,10 +701,10 @@
                 <div class="space-y-8">
                     <div class="flex gap-4">
                         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-slate-200 cursor-pointer hover:bg-primary hover:text-white transition-all">
-                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M7.75 2h8.5c3.175 0 5.75 2.575 5.75 5.75v8.5c0 3.175-2.575 5.75-5.75 5.75h-8.5c-3.175 0-5.75-2.575-5.75-5.75v-8.5c0-3.175 2.575-5.75 5.75-5.75zm8.5 2h-8.5c-2.071 0-3.75 1.679-3.75 3.75v8.5c0 2.071 1.679 3.75 3.75 3.75h8.5c2.071 0 3.75-1.679 3.75-3.75v-8.5c0-2.071-1.679-3.75-3.75-3.75zm-4.25 3.25c2.623 0 4.75 2.127 4.75 4.75s-2.127 4.75-4.75 4.75-4.75-2.127-4.75-4.75 2.127-4.75 4.75-4.75zm0 2c-1.519 0-2.75 1.231-2.75 2.75s1.231 2.75 2.75 2.75 2.75-1.231 2.75-2.75-1.231-2.75-2.75-2.75zm5.25-1c.414 0 .75.336.75.75s-.336.75-.75.75-.75-.336-.75-.75.336-.75.75-.75z"/></svg>
                         </div>
                         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-slate-200 cursor-pointer hover:bg-primary hover:text-white transition-all">
-                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </div>
                     </div>
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em]">Eatly Intelligence © 2026</p>
