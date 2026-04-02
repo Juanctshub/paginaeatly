@@ -214,26 +214,36 @@
                 </nav>
 
                 <!-- Mobile Trigger -->
-                <button class="md:hidden text-slate-900 navbar-mobile-btn p-2 hover:bg-slate-100 rounded-xl transition-colors">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
+                <button id="nav-mobile-btn" class="md:hidden text-slate-900 p-2 hover:bg-slate-100 rounded-xl transition-colors relative z-[110]">
+                    <i id="nav-mobile-icon" data-lucide="menu" class="w-6 h-6"></i>
                 </button>
             </div>
             
-            <!-- Mobile Menu content -->
-            <div id="mobile-menu" class="md:hidden absolute top-full left-0 w-full bg-white border-t border-slate-100 p-6 space-y-4 shadow-xl">
-                <a href="https://eatly-lyart.vercel.app/" target="_blank" class="block py-3 px-4 rounded-xl hover:bg-emerald-50 text-slate-900 font-bold flex items-center justify-between">
-                    <span>App Móvil</span>
-                    <i data-lucide="external-link" class="w-4 h-4 text-emerald-500"></i>
+            <!-- Mobile Menu content (Full Screen Overlay) -->
+            <div id="mobile-menu" class="md:hidden fixed inset-0 bg-white/95 backdrop-blur-2xl z-[105] flex flex-col items-center justify-center p-8 space-y-6 opacity-0 pointer-events-none transition-all duration-500 ease-[transparent]">
+                <div class="absolute top-8 left-8">
+                     <div class="flex items-center gap-3">
+                        <img src="assets/eatly.png" alt="Eatly Logo" class="w-10 h-10">
+                        <span class="text-3xl font-black tracking-tighter">Eatly</span>
+                    </div>
+                </div>
+                
+                <a href="https://eatly-lyart.vercel.app/" target="_blank" class="mobile-nav-link text-3xl font-black hover:text-primary transition-colors flex items-center gap-4">
+                    App Móvil <i data-lucide="external-link" class="w-6 h-6"></i>
                 </a>
-                <a href="#features" class="block py-3 px-4 rounded-xl hover:bg-emerald-50 text-slate-900 font-bold mobile-nav-link">Funciones</a>
-                <a href="https://eatly-lyart.vercel.app/?action=chat" target="_blank" class="block py-3 px-4 rounded-xl hover:bg-emerald-50 text-primary font-bold flex items-center justify-between">
-                    <span>Chat IA (Roko)</span>
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <a href="#features" class="mobile-nav-link text-3xl font-black hover:text-primary transition-colors">Funciones</a>
+                <a href="https://eatly-lyart.vercel.app/?action=chat" target="_blank" class="mobile-nav-link text-3xl font-black text-primary flex items-center gap-4">
+                    Roko IA <i data-lucide="sparkles" class="w-6 h-6"></i>
                 </a>
-                <a href="#opiniones" class="block py-3 px-4 rounded-xl hover:bg-emerald-50 text-slate-900 font-bold mobile-nav-link">Opiniones</a>
-                <a href="https://eatly-lyart.vercel.app/" target="_blank" class="block w-full bg-primary text-white py-4 rounded-xl font-black text-center shadow-lg shadow-primary/30">
-                    Ir a la App
-                </a>
+                <a href="#opiniones" class="mobile-nav-link text-3xl font-black hover:text-primary transition-colors">Opiniones</a>
+                
+                <div class="pt-10 w-full">
+                    <a href="https://eatly-lyart.vercel.app/" target="_blank" class="block w-full bg-primary text-white py-6 rounded-[2rem] font-black text-2xl text-center shadow-2xl shadow-primary/30 active:scale-95 transition-transform">
+                        Entrar a Eatly
+                    </a>
+                </div>
+                
+                <p class="absolute bottom-10 text-slate-400 font-bold uppercase tracking-widest text-[10px]">Eatly Premium © 2026</p>
             </div>
         </header>
     </div>
@@ -961,17 +971,27 @@
             });
         }
 
-        // Mobile Menu Toggle
-        const mobileBtn = document.querySelector('.navbar-mobile-btn');
+        // Mobile Menu Toggle Fix
+        const mobileBtn = document.getElementById('nav-mobile-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-        if (mobileBtn && mobileMenu) {
+        const mobileIcon = document.getElementById('nav-mobile-icon');
+
+        if (mobileBtn && mobileMenu && mobileIcon) {
             mobileBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('active');
-                const icon = mobileBtn.querySelector('i');
-                if (mobileMenu.classList.contains('active')) {
-                    icon.setAttribute('data-lucide', 'x');
+                const isActive = mobileMenu.classList.contains('opacity-100');
+                
+                if (isActive) {
+                    // Close Menu
+                    mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+                    mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+                    mobileIcon.setAttribute('data-lucide', 'menu');
+                    document.body.style.overflow = ''; // Unlock scroll
                 } else {
-                    icon.setAttribute('data-lucide', 'menu');
+                    // Open Menu
+                    mobileMenu.classList.remove('opacity-0', 'pointer-events-none');
+                    mobileMenu.classList.add('opacity-100', 'pointer-events-auto');
+                    mobileIcon.setAttribute('data-lucide', 'x');
+                    document.body.style.overflow = 'hidden'; // Lock scroll
                 }
                 lucide.createIcons();
             });
@@ -980,10 +1000,13 @@
         // Close mobile menu on link click
         document.querySelectorAll('.mobile-nav-link').forEach(link => {
             link.addEventListener('click', () => {
-                if (mobileMenu) mobileMenu.classList.remove('active');
-                const icon = mobileBtn.querySelector('i');
-                icon.setAttribute('data-lucide', 'menu');
-                lucide.createIcons();
+                if (mobileMenu && mobileIcon) {
+                    mobileMenu.classList.remove('opacity-100', 'pointer-events-auto');
+                    mobileMenu.classList.add('opacity-0', 'pointer-events-none');
+                    mobileIcon.setAttribute('data-lucide', 'menu');
+                    document.body.style.overflow = '';
+                    lucide.createIcons();
+                }
             });
         });
 
